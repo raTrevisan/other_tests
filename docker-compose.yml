@@ -20,7 +20,7 @@ services:
       replicas: 1
       placement:    
         constraints:
-          - node.labels.name==fog1
+          - node.labels.name==cloud
     command: dt-client-bytes
   twin:
     image: "opendigitaltwin/dt-instance:latest"
@@ -40,21 +40,21 @@ services:
     deploy:
       placement:    
         constraints:
-          - node.labels.name==fog1
+          - node.labels.name==cloud
     command: dt-instance
   mqtt-broker:
     image: "eclipse-mosquitto:1.6.10"
     networks:
       - default
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - /mosquitto.conf:/mosquitto/config/mosquitto.conf
       - /mosquitto/log:/mosquitto/log
       - /mosquitto/data:/mosquitto/data
     restart: always
     deploy:
       placement:
         constraints:
-          - node.labels.name==cloud
+          - node.labels.name==fog2
   scylla-db:
     image: scylladb/scylla
     networks:
@@ -64,6 +64,6 @@ services:
     deploy:
       placement:
         constraints:
-         - node.labels.name==fog1
+         - node.labels.name==cloud
 networks:
   default:
