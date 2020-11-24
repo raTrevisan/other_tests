@@ -42,19 +42,22 @@ services:
         constraints:
           - node.labels.name==cloud
     command: dt-instance
-  mqtt-broker:
-    image: "eclipse-mosquitto:1.6.10"
-    networks:
-      - default
-    volumes:
-      - /mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - /mosquitto/log:/mosquitto/log
-      - /mosquitto/data:/mosquitto/data
-    restart: always
+
+  vmq0:
+    image: vernemq/vernemq
+    environment:
+      DOCKER_VERNEMQ_SWARM: 1
+
+  vmq:
+    image: vernemq/vernemq
+    depends_on:
+      - vmq0
+    environment:
+      DOCKER_VERNEMQ_SWARM: 1
+      DOCKER_VERNEMQ_DISCOVERY_NODE: vmq0
     deploy:
-      placement:
-        constraints:
-          - node.labels.name==fog2
+      replicas: 1
+
   scylla-db:
     image: scylladb/scylla
     networks:
